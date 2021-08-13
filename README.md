@@ -1,6 +1,7 @@
 # data_modeling_rest_API_nodejs
 
-<b><u>Commands:</u></b>
+<b><u>usage:</u></b>
+- Change product_dao.js to use different daos implementations : normal - w. pipelines - w. transactions
 - Start with "node app.js".
 
 <b><u>Routes:</u></b>
