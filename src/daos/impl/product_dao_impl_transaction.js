@@ -14,7 +14,7 @@ const remap = async (hash, productImgKey) => {
   
     remappedHash.id = parseInt(hash.id, 10);
     remappedHash.price = parseInt(hash.price, 10);
-    remappedHash.category = parseInt(hash.price, 10);
+    remappedHash.category = parseInt(hash.category, 10);
 
     const imgsIds = await client.smembersAsync(productImgKey);
     const imgsKeys = ('imgs:' + imgsIds.join(' imgs:')).split(' ');
