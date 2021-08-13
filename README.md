@@ -4,9 +4,8 @@
 - Change product_dao.js to use different daos implementations : normal - w. pipelines - w. transactions
 - Start with "node app.js".
 
-
-![data modeling]
-(https://github.com/helenebrulin/data_modeling_rest_API_nodejs/blob/main/data%20modeling.png)
+<b><u>Data Modeling</u></b>
+![data modeling](https://github.com/helenebrulin/data_modeling_rest_API_nodejs/blob/main/data%20modeling.png)
 
 <b><u>Routes:</u></b>
 - POST http://localhost:3000/products w. JSON body : add a product. Images BLOBs must be in a string separated by commas. No ids, for product or images, should be provided.
