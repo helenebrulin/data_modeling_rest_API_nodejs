@@ -41,7 +41,7 @@ const add = async (product) => {
     const productKey = `${productKeyPrefix}:${productId}`;
     const productImgKey = `${productKeyPrefix}:${productId}:${imagesKeyPrefix}`;
 
-    const key = await client.hmsetAsync(productKey, productCopy);
+    await client.hmsetAsync(productKey, productCopy);
     await client.hsetAsync(productKey, 'id', productId);
     await client.hsetAsync(productsNameIndex, product.name, productId);
     await client.zaddAsync(productsByCategory, product.category, productId);
@@ -53,7 +53,7 @@ const add = async (product) => {
         await client.saddAsync(productImgKey, imgId);
     }
 
-    return key;
+    return (0);
 };
 
 

@@ -8,9 +8,9 @@ const add = async (name) => {
 
   const id = await client.incrbyAsync(categoryIdCounter, 1);
 
-  const key = await client.hsetAsync(categoryIndex, id, name);
+  await client.hsetAsync(categoryIndex, id, name);
 
-  return key;
+  return 0;
 };
 
 
