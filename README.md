@@ -36,7 +36,7 @@
 }
 ```
 - DELETE http://localhost:3000/productImage/:productID?imageId=** : delete an image for a given product
-- DELETE http://localhost:3000/products : delete a product
+- DELETE http://localhost:3000/products/:id : delete a product
 - GET http://localhost:3000/productsByName?pattern=**** : find product by name (exact match or pattern)
 - GET http://localhost:3000/productsByCategory/:id : find product by category
 
