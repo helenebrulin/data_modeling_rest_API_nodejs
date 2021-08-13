@@ -1,6 +1,6 @@
 const redis = require('../../utils/redis_client');
 
-const categoryIdCounter = "category:ctr";
+const categoryIdCounter = "categories:ctr";
 const categoryIndex = "categories:idx";
 
 const add = async (name) => {
