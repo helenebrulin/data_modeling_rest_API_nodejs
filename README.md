@@ -4,7 +4,7 @@
 - Change product_dao.js to use different daos implementations : normal - w. pipelines - w. transactions
 - Start with "node app.js".
 
-<b><u>Data Modeling</u></b>
+
 ![data modeling]
 (https://github.com/helenebrulin/data_modeling_rest_API_nodejs/blob/main/data%20modeling.png)
 
