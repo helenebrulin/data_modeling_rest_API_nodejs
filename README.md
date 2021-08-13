@@ -5,7 +5,7 @@
 - Start with "node app.js".
 
 <b><u>Routes:</u></b>
-- POST http://localhost:3000/product w. JSON body : add a product. Images BLOBs must be in a string separated by commas. No ids, for product or images, should be provided.
+- POST http://localhost:3000/products w. JSON body : add a product. Images BLOBs must be in a string separated by commas. No ids, for product or images, should be provided.
 ```json
 {
     "name": "telephone2",
@@ -17,8 +17,9 @@
     "images": "848016608498FE15C6050001000006020007002E000005E84501960844CFF,15C6050001000006020008002E000405E84,E15C6050001000006350800020000002E00010000"
 }
 ```
-- GET http://localhost:3000/product/:id : get product by ID
-- PUT http://localhost:3000/product/:id : update product (without images). All fields are optional and will not be replaced by empty strings if not specified.
+- GET http://localhost:3000/products : get all products
+- GET http://localhost:3000/products/:id : get product by ID
+- PUT http://localhost:3000/products/:id : update product (without images). All fields are optional and will not be replaced by empty strings if not specified.
 ```json
 {
     "currency": "dollar",
@@ -32,11 +33,11 @@
 }
 ```
 - DELETE http://localhost:3000/productImage/:productID?imageId=** : delete an image for a given product
-- DELETE http://localhost:3000/product : delete a product
-- GET http://localhost:3000/productByName?pattern=**** : find product by name (exact match or pattern)
-- GET http://localhost:3000/productByCategory/:id : find product by category
+- DELETE http://localhost:3000/products : delete a product
+- GET http://localhost:3000/productsByName?pattern=**** : find product by name (exact match or pattern)
+- GET http://localhost:3000/productsByCategory/:id : find product by category
 
-- POST http://localhost:3000/category w. JSON body : add a category. No id should be provided. 
+- POST http://localhost:3000/categories w. JSON body : add a category. No id should be provided. 
 ```json
 {"name": "sport"}
 ```

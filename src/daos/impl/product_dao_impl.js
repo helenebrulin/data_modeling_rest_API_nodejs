@@ -56,7 +56,6 @@ const add = async (product) => {
     return key;
 };
 
-
 const findById = async (id) => {
     const client = redis.getClient();
     const productKey = `${productKeyPrefix}:${id}`;

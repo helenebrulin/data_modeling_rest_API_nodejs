@@ -6,7 +6,7 @@ const productController = require('../controllers/product_controller');
 const categoryController = require('../controllers/category_controller'); 
 
 router.post(
-    '/product',
+    '/products',
     [
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
@@ -27,9 +27,21 @@ router.post(
     },
   );
 
+  router.get(
+    '/products',
+    async (req, res, next) => {
+      try {
+        const products = await productController.findAll();
+        return (products ? res.status(200).json(products) : res.sendStatus(404));
+      } catch (err) {
+        return next(err);
+      }
+    },
+  );
+
 
 router.get(
-    '/product/:id',
+    '/products/:id',
     [
       param('id').isInt().not().isEmpty(),
       apiErrorReporter,
@@ -45,7 +57,7 @@ router.get(
   );
 
   router.put(
-    '/product/:id',
+    '/products/:id',
     [
       param('id').isInt().optional(),
       body('name').trim().escape().optional(),
@@ -58,7 +70,6 @@ router.get(
     ],
     async (req, res, next) => {
       try {
-        //console.log(req.body);
         await productController.update(req.params.id, req.body);
         return res.status(201).send('OK');
       } catch (err) {
@@ -68,7 +79,7 @@ router.get(
   );
 
   router.delete(
-    '/product/:id',
+    '/products/:id',
     [
       param('id').isInt(),
       apiErrorReporter,
@@ -118,7 +129,7 @@ router.get(
   );
 
   router.get(
-    '/productByName',
+    '/productsByName',
     async (req, res, next) => {
       try {
         const products = await productController.findByName(req.query.pattern);
@@ -130,7 +141,7 @@ router.get(
   );
 
   router.get(
-    '/productByCategory/:id',
+    '/productsByCategory/:id',
     [
         param('id').isInt().not().isEmpty(),
         apiErrorReporter,
@@ -148,7 +159,7 @@ router.get(
 
 
   router.post(
-    '/category',
+    '/categories',
     [
         body('name').not().isEmpty().trim().escape().not().isEmpty(),
         apiErrorReporter,
