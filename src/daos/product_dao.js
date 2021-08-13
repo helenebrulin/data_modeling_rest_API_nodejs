@@ -2,8 +2,8 @@
 Change as needed :
 **/
 
-const impl = require('./impl/product_dao_impl');
-//const impl = require('./impl/product_dao_impl_pipeline');
+//const impl = require('./impl/product_dao_impl');
+const impl = require('./impl/product_dao_impl_pipeline');
 //const impl = require('./impl/product_dao_impl_transaction');
 
 module.exports = {

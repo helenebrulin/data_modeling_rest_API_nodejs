@@ -161,20 +161,27 @@ const del = async (id) => {
 
 const findByName = async (pattern) => {
     const client = redis.getClient();
-
-    const res = [];
+    
     let cursor = 0; 
+
+    const pipeline = client.batch();
 
     do {
         tmp = await client.hscanAsync(productsNameIndex, cursor, "MATCH", pattern);
         cursor = tmp[0];
         for (let i = 0; i < tmp[1].length; i++) {
             if (i % 2 != 0) {
-                let product = await findById(tmp[1][i]);
-                res.push(product);
+                let productKey = `${productKeyPrefix}:${tmp[1][i]}`;
+                pipeline.hgetallAsync(productKey);
+                
             }
         }
     } while (cursor != 0);
+
+    const response = await pipeline.execAsync();
+
+    const res = await parsePipelinedResponse(response);
+
     return (res);
 };
 
@@ -182,16 +189,31 @@ const findByName = async (pattern) => {
 const findByCategory = async (categoryId) => {
     const client = redis.getClient();
 
-    const res = [];
-
     let tmp = await client.zrangeAsync(productsByCategory, categoryId, categoryId, "BYSCORE");
+
+    const pipeline = client.batch();
     for (let i = 0; i < tmp.length; i++) {
-        let product = await findById(tmp[i]);
-        res.push(product);
+        let productKey = `${productKeyPrefix}:${tmp[i]}`;
+        pipeline.hgetallAsync(productKey);
     }
+
+    const response = await pipeline.execAsync();
+    
+    const res = await parsePipelinedResponse(response);
 
     return (res);
 };
+
+const parsePipelinedResponse = async (response) => {
+    const res = [];
+
+    for (let i = 0; i < response.length; i++) {
+        let productImgKey = `${productKeyPrefix}:${response[i].id}:${imagesKeyPrefix}`;
+        let tmp = await remap(response[i], productImgKey);
+        res.push(tmp);
+    }
+    return res;
+}
 
 module.exports = {
     add,
