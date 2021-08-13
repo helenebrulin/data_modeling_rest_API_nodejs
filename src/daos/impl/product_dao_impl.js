@@ -125,11 +125,12 @@ const del = async (id) => {
     await client.zremAsync(productsByCategory, id);
 
     const imgsIds = await client.smembersAsync(productImgKey);
+    const keys = [];
     for (i = 0; i < imgsIds.length; i++) {
-        let key = `${imagesKeyPrefix}:${imgsIds[i]}`;
-        await client.delAsync(key);
+        keys.push(`${imagesKeyPrefix}:${imgsIds[i]}`);
     }
-    await client.delAsync(productImgKey);
+    keys.push(productImgKey);
+    await client.delAsync(keys);
 
     return (0);
 };

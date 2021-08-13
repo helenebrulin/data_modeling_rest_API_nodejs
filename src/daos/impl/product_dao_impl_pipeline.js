@@ -41,17 +41,23 @@ const add = async (product) => {
     const productKey = `${productKeyPrefix}:${productId}`;
     const productImgKey = `${productKeyPrefix}:${productId}:${imagesKeyPrefix}`;
 
-    await client.hmsetAsync(productKey, productCopy);
-    await client.hsetAsync(productKey, 'id', productId);
-    await client.hsetAsync(productsNameIndex, product.name, productId);
-    await client.zaddAsync(productsByCategory, product.category, productId);
+    const pipeline = client.batch();
+
+    pipeline.hmsetAsync(productKey, productCopy);
+    pipeline.hsetAsync(productKey, 'id', productId);
+    pipeline.hsetAsync(productsNameIndex, product.name, productId);
+    pipeline.zaddAsync(productsByCategory, product.category, productId);
+
+    await pipeline.execAsync();
 
     for (i = 0; i < images.length; i++) {
         let imgId = await client.incrbyAsync(imagesIdCounter, 1);
         let imgKey = `${imagesKeyPrefix}:${imgId}`;
-        await client.setAsync(imgKey, images[i]);
-        await client.saddAsync(productImgKey, imgId);
+        pipeline.setAsync(imgKey, images[i]);
+        pipeline.saddAsync(productImgKey, imgId);
     }
+
+    await pipeline.execAsync();
 
     return (0);
 };
@@ -72,14 +78,18 @@ const update = async (id, product) => {
     const productKey = `${productKeyPrefix}:${id}`;
 
     await client.hmsetAsync(productKey, product);
+
+    const pipeline = client.batch();
     if (product.name) {
         const oldName = await client.hgetAsync(productKey, 'name');
-        await client.hdelAsync(productsNameIndex, oldName);
-        await client.hsetAsync(productsNameIndex, product.name, id);
+        pipeline.hdelAsync(productsNameIndex, oldName);
+        pipeline.hsetAsync(productsNameIndex, product.name, id);
         }
     if (product.category) {
-        await client.zaddAsync(productsByCategory, product.category, id);
+        pipeline.zaddAsync(productsByCategory, product.category, id);
     }
+
+    await pipeline.execAsync();
     
     return 0;
 };
@@ -89,8 +99,12 @@ const deleteImage = async (imgId, productId) => {
     const productImgKey = `${productKeyPrefix}:${productId}:${imagesKeyPrefix}`;
     let imgKey = `${imagesKeyPrefix}:${imgId}`;
 
-    await client.sremAsync(productImgKey, imgId);
-    await client.del(imgKey);
+    const pipeline = client.batch();
+
+    pipeline.sremAsync(productImgKey, imgId);
+    pipeline.del(imgKey);
+
+    await pipeline.execAsync();
     
     return (0);
 };
@@ -101,12 +115,16 @@ const addImage = async (imgs, productId) => {
 
     const images = imgs.split(',');
 
+    const pipeline = client.batch();
+
     for (i = 0; i < images.length; i++) {
         let imgId = await client.incrbyAsync(imagesIdCounter, 1);
         let imgKey = `${imagesKeyPrefix}:${imgId}`;
-        await client.setAsync(imgKey, images[i]);
-        await client.saddAsync(productImgKey, imgId);
+        pipeline.setAsync(imgKey, images[i]);
+        pipeline.saddAsync(productImgKey, imgId);
     }
+
+    await pipeline.execAsync();
     
     return (0);
 };
@@ -118,18 +136,26 @@ const del = async (id) => {
     const productImgKey = `${productKeyPrefix}:${id}:${imagesKeyPrefix}`;
   
     const oldName = await client.hgetAsync(key, 'name'); //SECURE IN CASE IT DOES NOT EXIST
-    await client.hdelAsync(productsNameIndex, oldName);
 
-    await client.delAsync(key);
+    const pipeline = client.batch();
 
-    await client.zremAsync(productsByCategory, id);
+    pipeline.hdelAsync(productsNameIndex, oldName);
+
+    pipeline.delAsync(key);
+
+    pipeline.zremAsync(productsByCategory, id);
+
+    await pipeline.execAsync();
 
     const imgsIds = await client.smembersAsync(productImgKey);
+    const keys = [];
     for (i = 0; i < imgsIds.length; i++) {
-        let key = `${imagesKeyPrefix}:${imgsIds[i]}`;
-        await client.delAsync(key);
+        keys.push(`${imagesKeyPrefix}:${imgsIds[i]}`);
     }
-    await client.delAsync(productImgKey);
+    keys.push(productImgKey);
+    pipeline.delAsync(keys);
+
+    await pipeline.execAsync();
 
     return (0);
 };
