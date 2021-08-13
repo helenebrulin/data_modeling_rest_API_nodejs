@@ -7,6 +7,10 @@ module.exports = {
 
     update: async (id, product) => impl.update(id, product),
 
+    removeImage: async (imgId, productId) => impl.removeImage(imgId, productId),
+
+    addImage: async (images, productId) => impl.addImage(images, productId),
+
     del: async id => impl.del(id),
 
     findByName: async pattern => impl.findByName(pattern),

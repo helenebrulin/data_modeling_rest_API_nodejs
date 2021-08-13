@@ -13,12 +13,12 @@ router.post(
       body('vendor').not().isEmpty().trim().escape(),
       body('price').isInt(),
       body('currency').not().isEmpty().trim().escape(),
-      body('category').isInt(),
+      body('category').not().isEmpty().isInt(),
+      body('images').trim().escape(),
       apiErrorReporter,
     ],
     async (req, res, next) => {
       try {
-        //console.log(req.body);
         await productController.add(req.body);
         return res.status(201).send('OK');
       } catch (err) {
@@ -31,7 +31,7 @@ router.post(
 router.get(
     '/product/:id',
     [
-      param('id').isInt(),
+      param('id').isInt().not().isEmpty(),
       apiErrorReporter,
     ],
     async (req, res, next) => {
@@ -47,7 +47,7 @@ router.get(
   router.put(
     '/product/:id',
     [
-        param('id').isInt().optional(),
+      param('id').isInt().optional(),
       body('name').trim().escape().optional(),
       body('description').trim().escape().optional(),
       body('vendor').trim().escape().optional(),
@@ -83,6 +83,41 @@ router.get(
     },
   );
 
+  router.post(
+    '/productImage/:id',
+    [
+      param('id').isInt().not().isEmpty(),
+      body('images').not().isEmpty().trim().escape(),
+      apiErrorReporter,
+    ],
+    async (req, res, next) => {
+      try {
+        //console.log(req.body);
+        await productController.addImage(req.body.images, req.params.id);
+        return res.status(201).send('OK');
+      } catch (err) {
+        return next(err);
+      }
+    },
+  );
+
+  router.post(
+    '/productImage/:id',
+    [
+      param('id').isInt().not().isEmpty(),
+      query('imageId').isInt().not().isEmpty(),
+      apiErrorReporter,
+    ],
+    async (req, res, next) => {
+      try {
+        //console.log(req.body);
+        await productController.addImage(req.query.imageId, req.params.id);
+        return res.status(201).send('OK');
+      } catch (err) {
+        return next(err);
+      }
+    },
+  );
 
   router.get(
     '/productByName',
@@ -99,7 +134,7 @@ router.get(
   router.get(
     '/productByCategory/:id',
     [
-        param('id').isInt(),
+        param('id').isInt().not().isEmpty(),
         apiErrorReporter,
     ],
     async (req, res, next) => {
@@ -117,7 +152,7 @@ router.get(
   router.post(
     '/category',
     [
-        body('name').not().isEmpty().trim().escape(),
+        body('name').not().isEmpty().trim().escape().not().isEmpty(),
         apiErrorReporter,
     ],
     async (req, res, next) => {
