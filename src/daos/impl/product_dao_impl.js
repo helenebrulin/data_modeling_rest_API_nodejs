@@ -68,9 +68,9 @@ const update = async (id, product) => {
     const client = redis.getClient();
     const productKey = `${productKeyPrefix}:${id}`;
 
-    await client.hmsetAsync(productKey, productCopy);
+    await client.hmsetAsync(productKey, product);
     if (product.name) {
-        const oldName = await client.hgetAsync(key, 'name');
+        const oldName = await client.hgetAsync(productKey, 'name');
         await client.hdelAsync(productsNameIndex, oldName);
         await client.hsetAsync(productsNameIndex, product.name, id);
         }
@@ -78,7 +78,7 @@ const update = async (id, product) => {
         await client.zaddAsync(productsByCategory, product.category, id);
     }
     
-    return key;
+    return 0;
 };
 
 const removeImage = async (imgId, productId) => {
@@ -113,8 +113,8 @@ const del = async (id) => {
     const key = `${productKeyPrefix}:${id}`;
     const productImgKey = `${productKeyPrefix}:${id}:${imagesKeyPrefix}`;
   
-    const name = await client.hgetAsync(productsNameIndex, 'name');
-    await client.hdelAsync(productsNameIndex, name);
+    const oldName = await client.hgetAsync(key, 'name'); //SECURE IN CASE IT DOES NOT EXIST
+    await client.hdelAsync(productsNameIndex, oldName);
 
     await client.delAsync(key);
 
@@ -122,7 +122,8 @@ const del = async (id) => {
 
     const imgsIds = await client.smembersAsync(productImgKey);
     for (i = 0; i < imgsIds.length; i++) {
-        await client.delAsync(imgId);
+        let key = `${imagesKeyPrefix}:${imgsIds[i]}`;
+        await client.delAsync(key);
     }
     await client.delAsync(productImgKey);
 
