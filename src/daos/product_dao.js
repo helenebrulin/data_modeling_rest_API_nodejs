@@ -7,7 +7,7 @@ module.exports = {
 
     update: async (id, product) => impl.update(id, product),
 
-    removeImage: async (imgId, productId) => impl.removeImage(imgId, productId),
+    deleteImage: async (imgId, productId) => impl.deleteImage(imgId, productId),
 
     addImage: async (images, productId) => impl.addImage(images, productId),
 

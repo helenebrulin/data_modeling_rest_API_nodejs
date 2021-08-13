@@ -92,7 +92,6 @@ router.get(
     ],
     async (req, res, next) => {
       try {
-        //console.log(req.body);
         await productController.addImage(req.body.images, req.params.id);
         return res.status(201).send('OK');
       } catch (err) {
@@ -101,7 +100,7 @@ router.get(
     },
   );
 
-  router.post(
+  router.delete(
     '/productImage/:id',
     [
       param('id').isInt().not().isEmpty(),
@@ -110,8 +109,7 @@ router.get(
     ],
     async (req, res, next) => {
       try {
-        //console.log(req.body);
-        await productController.addImage(req.query.imageId, req.params.id);
+        await productController.deleteImage(req.query.imageId, req.params.id);
         return res.status(201).send('OK');
       } catch (err) {
         return next(err);

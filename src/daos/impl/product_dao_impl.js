@@ -54,6 +54,7 @@ const add = async (product) => {
     return key;
 };
 
+
 const findById = async (id) => {
     const client = redis.getClient();
     const productKey = `${productKeyPrefix}:${id}`;
@@ -81,12 +82,13 @@ const update = async (id, product) => {
     return 0;
 };
 
-const removeImage = async (imgId, productId) => {
+const deleteImage = async (imgId, productId) => {
     const client = redis.getClient();
     const productImgKey = `${productKeyPrefix}:${productId}:${imagesKeyPrefix}`;
+    let imgKey = `${imagesKeyPrefix}:${imgId}`;
 
     await client.sremAsync(productImgKey, imgId);
-    await client.del(imgId);
+    await client.del(imgKey);
     
     return (0);
 };
@@ -140,9 +142,10 @@ const findByName = async (pattern) => {
     do {
         tmp = await client.hscanAsync(productsNameIndex, cursor, "MATCH", pattern);
         cursor = tmp[0];
-        for (i = 0; i < tmp[1].length; i++) {
+        for (let i = 0; i < tmp[1].length; i++) {
+            console.log(i);
             if (i % 2 != 0) {
-                let product = await(findById(tmp[1][i]));
+                let product = await findById(tmp[1][i]);
                 res.push(product);
             }
         }
@@ -157,8 +160,8 @@ const findByCategory = async (categoryId) => {
     const res = [];
 
     let tmp = await client.zrangeAsync(productsByCategory, categoryId, categoryId, "BYSCORE");
-    for (i = 0; i < tmp.length; i++) {
-        let product = await(findById(tmp[i]));
+    for (let i = 0; i < tmp.length; i++) {
+        let product = await findById(tmp[i]);
         res.push(product);
     }
 
@@ -169,7 +172,7 @@ module.exports = {
     add,
     findById,
     update,
-    removeImage,
+    deleteImage,
     addImage,
     del,
     findByName,
