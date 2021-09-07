@@ -51,7 +51,7 @@ const add = async (product) => {
     await transaction.execAsync();
 
     for (i = 0; i < images.length; i++) {
-        let imgId = await client.incrbyAsync(imagesIdCounter, 1);
+        let imgId = await client.incrbyAsync(imagesIdCounter, 1); //I could have gotten all ids first and then run a single transaction rather than two!
         let imgKey = `${imagesKeyPrefix}:${imgId}`;
         transaction.setAsync(imgKey, images[i]);
         transaction.saddAsync(productImgKey, imgId);

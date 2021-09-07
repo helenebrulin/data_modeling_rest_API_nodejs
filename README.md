@@ -2,10 +2,14 @@
 
 <b><u>Usage</u></b>
 - Change product_dao.js to use different daos implementations : normal - w. pipelines - w. transactions
+- Each file is not optimized : get operations should use pipelines, and write use transactions. 
 - Start with "node app.js".
 
 <b><u>Data Modeling</u></b>
 ![data modeling](https://github.com/helenebrulin/data_modeling_rest_API_nodejs/blob/main/data%20modeling.png)
+
+UPDATE : if the requirement is not to search by pattern, but to search by prefix, then a <b>single sorted</b> is enough for both "Search by Category" and "Search by Name". The sorted set should have the category id as a score, and "name:productId" as value. Then you can do a lexicographical search. 
+
 
 <b><u>Routes:</u></b>
 - POST http://localhost:3000/products w. JSON body : add a product. Images BLOBs must be in a string separated by commas. No ids, for product or images, should be provided.
